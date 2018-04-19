@@ -1,0 +1,38 @@
+{
+  "name": "rollup-starter-lib",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/Futch.cjs.js",
+  "module": "dist/Futch.esm.js",
+  "peerDependencies": {
+    "react": "^16.3.2"
+  },
+  "dependencies": {
+    "hoist-non-react-statics": "^2.5.0",
+    "md5": "^2.2.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-jest": "^22.4.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-react": "^6.24.1",
+    "dom-testing-library": "^1.7.1",
+    "jest": "^22.4.3",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-testing-library": "^2.1.1",
+    "rollup": "^0.58.1",
+    "rollup-plugin-babel": "^3.0.3"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "pretest": "npm run build"
+  },
+  "files": ["dist"]
+}

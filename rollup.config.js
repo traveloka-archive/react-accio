@@ -1,0 +1,20 @@
+import babel from 'rollup-plugin-babel';
+import pkg from './package.json';
+
+export default [
+  {
+    input: 'src/index.js',
+    external: ['hoist-non-react-statics', 'md5', 'react'],
+    output: [
+      { file: pkg.main, format: 'cjs' },
+      { file: pkg.module, format: 'es' },
+    ],
+    plugins: [
+      // flow(),
+      babel({
+        plugins: ['external-helpers'],
+        exclude: ['node_modules/**'],
+      }),
+    ],
+  },
+];
