@@ -1,2 +1,2 @@
-export { default as Futch } from './CachedFutch'
-export { FutchCacheProvider } from './FutchCacheContext';
+export { default as Futch } from './lib/CachedFutch'
+export { FutchCacheProvider } from './lib/FutchCacheContext';

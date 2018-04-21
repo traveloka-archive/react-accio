@@ -1,5 +1,5 @@
 import resolver from './resolver';
-import validateFunctionAssignment from './utils/validateFunctionAssignment';
+import validateFunctionAssignment from '../utils/validateFunctionAssignment';
 
 const createIdentity = () => value => value;
 

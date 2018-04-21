@@ -1,4 +1,4 @@
-import to from './utils/to';
+import to from '../utils/to';
 
 // default resolver
 export default async function resolver(url, data) {
