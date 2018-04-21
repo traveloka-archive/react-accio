@@ -2,7 +2,7 @@
 import * as React from 'react';
 
 import to from '../utils/to';
-import defaults from '../defaults';
+import defaults from '../defaults/index';
 import md5 from 'md5';
 
 import { type FutchCache } from './FutchCacheContext';
