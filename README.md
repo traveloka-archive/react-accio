@@ -190,14 +190,14 @@ import { FutchCacheProvider } from 'futch'
 // inside your app
 <div>
   {/* first fetch will hit the network & store to the nearest provider */}
-  <Futch url="https://api.example.com/data">{renderPageHeader}</Fetch>
+  <Futch url="https://api.example.com/data">{renderPageHeader}</Futch>
 
   {/* subsequent fetches will WAIT for the first resolver to complete fetching & storing to the cache */}
   {/* only then it will read from the cache */}
-  <Futch url="https://api.example.com/data">{renderPageContent}</Fetch>
+  <Futch url="https://api.example.com/data">{renderPageContent}</Futch>
 
   {/* use ignoreCache prop to skip cache reading & always fetch fresh data from network */}
-  <Futch url="https://api.example.com/data" ignoreCache>{renderPageFooter}</Fetch>
+  <Futch url="https://api.example.com/data" ignoreCache>{renderPageFooter}</Futch>
 </div>
 ```
 
