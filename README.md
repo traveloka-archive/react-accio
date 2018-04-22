@@ -128,9 +128,9 @@ function renderData({ loading, error, response, trigger }) {
   return null;
 }
 
-<Fetch url="https://api.example.com/data">
+<Futch url="https://api.example.com/data">
   {renderData}
-</Fetch>
+</Futch>
 ```
 
 ### Handling errors
@@ -190,14 +190,14 @@ import { FutchCacheProvider } from 'futch'
 // inside your app
 <div>
   {/* first fetch will hit the network & store to the nearest provider */}
-  <Fetch url="https://api.example.com/data">{renderPageHeader}</Fetch>
+  <Futch url="https://api.example.com/data">{renderPageHeader}</Fetch>
 
   {/* subsequent fetches will WAIT for the first resolver to complete fetching & storing to the cache */}
   {/* only then it will read from the cache */}
-  <Fetch url="https://api.example.com/data">{renderPageContent}</Fetch>
+  <Futch url="https://api.example.com/data">{renderPageContent}</Fetch>
 
   {/* use ignoreCache prop to skip cache reading & always fetch fresh data from network */}
-  <Fetch url="https://api.example.com/data" ignoreCache>{renderPageFooter}</Fetch>
+  <Futch url="https://api.example.com/data" ignoreCache>{renderPageFooter}</Fetch>
 </div>
 ```
 
