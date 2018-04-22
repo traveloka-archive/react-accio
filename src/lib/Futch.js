@@ -7,23 +7,26 @@ import md5 from 'md5';
 
 import { type FutchCache } from './FutchCacheContext';
 
+type Dict<K, V> = { [key: K]: V };
+
 export type Props = {
   // required props
   children: (FutchState: State) => React.Node,
   url: string,
 
+  // fetch options
+  body: any,
+  headers: Dict<string, string>,
+  method: string,
+
   // optional props
-  data: any,
+  context: Object,
   defer: boolean,
   ignoreCache: boolean,
-  context: Object,
-  method: 'GET' | 'POST',
   onComplete?: (response: any) => any,
   onError?: (error: Error) => any,
   onShowLoading?: () => any,
   onStartFetching?: () => any,
-  prepare: (request: any) => any,
-  process: (resoponse: any) => any,
   timeout?: number,
 
   // private props
@@ -39,21 +42,40 @@ type State = {
 
 type Defaults = {
   method: 'GET' | 'POST',
-  preparator: (request: any) => any,
-  processor: (response: any) => any,
   resolver: Resolver,
-};
-
-export type FutchOptions = {
-  data?: any,
-  method: 'GET' | 'POST',
 };
 
 type Resolver = (
   url: string,
-  FutchOptions: FutchOptions,
+  FetchOptions: Object,
   context: Object
 ) => Promise<any>;
+
+const FutchPropKeys = new Set([
+  'children',
+  'url',
+  'context',
+  'defer',
+  'ignoreCache',
+  'onComplete',
+  'onError',
+  'onShowLoading',
+  'onStartFetching',
+  'timeout',
+  '_cache',
+]);
+
+function getFetchOptions(props) {
+  const fetchOptions = {};
+  const propKeys = Object.keys(props);
+  for (let i = 0; i < propKeys.length; i++) {
+    const propKey = propKeys[i];
+    if (!FutchPropKeys.has(propKey)) {
+      fetchOptions[propKey] = props[propKey];
+    }
+  }
+  return fetchOptions;
+}
 
 class Futch extends React.Component<Props, State> {
   static defaults: Defaults = defaults;
@@ -63,8 +85,6 @@ class Futch extends React.Component<Props, State> {
     ignoreCache: false,
     context: {},
     method: Futch.defaults.method,
-    prepare: Futch.defaults.preparator,
-    process: Futch.defaults.processor,
   };
 
   state = {
@@ -74,7 +94,7 @@ class Futch extends React.Component<Props, State> {
     trigger: this.doWork.bind(this),
   };
 
-  timer: number;
+  timer: TimeoutID;
 
   componentDidMount() {
     if (this.props.defer === true) {
@@ -92,7 +112,7 @@ class Futch extends React.Component<Props, State> {
       this.setLoading.call(this, true);
     }
 
-    const [err, response] = await to(this.doFutch.call(this));
+    const [err, response] = await to(this.doFetch.call(this));
 
     if (err) {
       this.setError.call(this, err);
@@ -106,12 +126,10 @@ class Futch extends React.Component<Props, State> {
     this.setResponse.call(this, response);
   }
 
-  doFutch(): Promise<*> {
+  doFetch(): Promise<*> {
     const {
-      data,
       url,
       context,
-      method,
       onStartFetching,
       ignoreCache,
       _cache,
@@ -120,16 +138,13 @@ class Futch extends React.Component<Props, State> {
     if (typeof onStartFetching === 'function') {
       onStartFetching();
     }
-    const FutchOptions: FutchOptions = {
-      data: this.props.prepare(data),
-      method,
-    };
+    const fetchOptions = getFetchOptions(this.props);
 
     // resolve from cache if applicable
     if (_cache && ignoreCache === false) {
       let cacheKey = url;
-      if (data) {
-        cacheKey = cacheKey + JSON.stringify(data);
+      if (fetchOptions.body) {
+        cacheKey = cacheKey + JSON.stringify(fetchOptions.body);
       }
       const hash = md5(cacheKey);
       // check for existing cache entry
@@ -138,7 +153,7 @@ class Futch extends React.Component<Props, State> {
         return Promise.resolve(_cache.get(hash));
       } else {
         // cache miss
-        const promise = resolver(url, FutchOptions, context);
+        const promise = resolver(url, fetchOptions, context);
         // store promise in cache
         _cache.set(hash, promise);
         return promise.then((response: any) => {
@@ -150,7 +165,7 @@ class Futch extends React.Component<Props, State> {
       }
     }
 
-    return resolver(url, FutchOptions, context);
+    return resolver(url, fetchOptions, context);
   }
 
   setLoading(loading: boolean) {
@@ -163,12 +178,11 @@ class Futch extends React.Component<Props, State> {
   }
 
   setResponse(response: ?any) {
-    const processedResponse = this.props.process(response);
     if (typeof this.props.onComplete === 'function') {
-      this.props.onComplete(processedResponse);
+      this.props.onComplete(response);
     }
     this.setState({
-      response: processedResponse,
+      response,
     });
   }
 

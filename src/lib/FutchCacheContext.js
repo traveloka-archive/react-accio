@@ -10,6 +10,7 @@ type Props = {
   use: StorageType,
 };
 
+// $FlowFixMe
 const { Provider, Consumer } = React.createContext(null);
 
 function configureCache(type: StorageType): FutchCache {

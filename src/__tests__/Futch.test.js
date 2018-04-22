@@ -34,7 +34,7 @@ function createResolver({ delayMs, error = false, errorMessage } = {}) {
 
 const basicProps = {
   url: '/fetch/foo',
-  data: {},
+  body: {},
   context: {
     domain: 'flight',
   },
@@ -139,29 +139,6 @@ describe('<Futch />', () => {
     expect(resolverSpy).toHaveBeenCalled();
   });
 
-  test('Prepare & response', async () => {
-    const resolverSpy = jest.spyOn(Futch.defaults, 'resolver');
-
-    const prepped = 'prepped';
-    const processed = 'processed';
-    const preparator = jest.fn(_ => prepped);
-    const processor = jest.fn(_ => processed);
-    const onComplete = jest.fn();
-
-    render(
-      <Futch {...basicProps} prepare={preparator} process={processor} onComplete={onComplete}>
-        {renderFutch}
-      </Futch>
-    );
-
-    expect(preparator).toHaveBeenCalled();
-    expect(resolverSpy.mock.calls[0][1].data).toBe(prepped);
-    await wait(() => {
-      expect(processor).toHaveBeenCalled();
-      expect(onComplete).toHaveBeenCalledWith(processed);
-    });
-  });
-
   test('Cached fetch', async () => {
     const resolverSpy = jest.spyOn(Futch.defaults, 'resolver');
 
@@ -210,7 +187,7 @@ describe('<Futch />', () => {
     expect(resolverSpy).toBeCalledWith(
       basicProps.url,
       expect.objectContaining({
-        data: basicProps.data,
+        body: basicProps.body,
         method: Futch.defaults.method,
       }),
       basicProps.context
@@ -222,8 +199,6 @@ describe('<Futch />', () => {
     const unsupportedMethods = ['PUT', 'PATCH', 'HEAD', 'DELETE'];
     const errorCount = {
       resolver: 0,
-      preparator: 0,
-      processor: 0,
       method: 0,
     };
 
@@ -235,19 +210,7 @@ describe('<Futch />', () => {
       }
 
       try {
-        Futch.defaults.preparator = type;
-      } catch (e) {
-        errorCount.preparator++;
-      }
-
-      try {
-        Futch.defaults.processor = type;
-      } catch (e) {
-        errorCount.processor++;
-      }
-
-      try {
-        Futch.defaults.processor = type;
+        Futch.defaults.method = type;
       } catch (e) {
         errorCount.method++;
       }
@@ -262,8 +225,6 @@ describe('<Futch />', () => {
     });
 
     expect(errorCount.resolver).toBe(notFunctionTypes.length);
-    expect(errorCount.preparator).toBe(notFunctionTypes.length);
-    expect(errorCount.processor).toBe(notFunctionTypes.length);
     expect(errorCount.method).toBe(notFunctionTypes.length + unsupportedMethods.length);
   });
 });
