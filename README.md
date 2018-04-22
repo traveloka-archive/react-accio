@@ -87,6 +87,7 @@ Futch comes with a default `window.fetch` resolver. You can pass the options suc
 <Futch
   url="https://api.example.com/data"
   method="POST"
+  body={{ foo: 'bar' }}
   headers={{ "X-Powered-By": "Futch" }}
 >
   {renderFutch}
@@ -202,10 +203,10 @@ import { FutchCacheProvider } from 'futch'
 
 ### Complex fetching
 
-Sometimes you want to do complex fetching mechanism such as polling. You cannot do that using render-prop without too many hacks. Thankfully, Fetch provides an escape hatch for this use case where you can access its resolver anytime conveniently. That said, you can go back to imperative style coding by extracting Fetch resolver:
+Sometimes you want to do complex fetching mechanism such as polling. You cannot do that using render-prop without too many hacks. Thankfully, Futch provides an escape hatch for this use case where you can access its resolver anytime conveniently. That said, you can go back to imperative style coding by extracting Futch resolver:
 
 ```jsx
-const fetchAPI = Fetch.defaults.resolver;
+const fetchAPI = Futch.defaults.resolver;
 
 componentDidMount() {
   // start polling
