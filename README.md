@@ -5,6 +5,22 @@
 Declaratively fetch multiple APIs with a single React component.
 
 ---
+- [Why Futch](#why-futch)
+  - [Resolver as a plugin](#resolver-as-a-plugin)
+  - [Futch as a standardized interface](#futch-as-a-standardized-interface)
+- [How to use](#how-to-use)
+  - [Setup](#setup)
+  - [Basic example](#basic-example)
+  - [Specifying fetch options](#specifying-fetch-options)
+  - [Deferring fetch](#deferring-fetch)
+  - [Using render prop](#using-render-prop)
+  - [Handling errors](#handling-errors)
+  - [Using lifecycle props](#using-lifecycle-props)
+  - [Delaying loading](#delaying-loading)
+  - [Caching responses](#caching-responses)
+  - [Complex fetching](#complex-fetching)
+- [Writing a resolver](#writing-a-resolver)
+- [Contributing](#contributing)
 
 ## Why Futch
 
