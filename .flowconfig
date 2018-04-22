@@ -1,6 +1,7 @@
-ignore]
+[ignore]
 
 [include]
+./src
 
 [libs]
 

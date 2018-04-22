@@ -21,6 +21,7 @@
     "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
     "dom-testing-library": "^1.7.1",
+    "flow-bin": "^0.70.0",
     "jest": "^22.4.3",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
@@ -32,7 +33,10 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "test": "jest",
-    "pretest": "npm run build"
+    "pretest": "npm run build",
+    "flow": "flow"
   },
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }
