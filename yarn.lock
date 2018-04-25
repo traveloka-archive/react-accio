@@ -1193,7 +1193,16 @@ diff@^3.2.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
 
-dom-testing-library@^1.0.0, dom-testing-library@^1.7.1:
+dom-testing-library@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.npmjs.org/dom-testing-library/-/dom-testing-library-1.10.0.tgz#d10c083a8f15fa296457edbd05c4be455a5d7419"
+  dependencies:
+    jest-dom "^1.0.0"
+    mutationobserver-shim "^0.3.2"
+    pretty-format "^22.4.3"
+    wait-for-expect "^0.4.0"
+
+dom-testing-library@^1.7.1:
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/dom-testing-library/-/dom-testing-library-1.7.1.tgz#32028cc1e913109fb300e74cec4164f1dd65f8c5"
   dependencies:
@@ -3035,12 +3044,12 @@ react-dom@^16.3.2:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
 
-react-testing-library@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/react-testing-library/-/react-testing-library-2.1.1.tgz#1d7eb5002823eeedca4c247cdfe8450cfbd4f3b8"
+react-testing-library@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/react-testing-library/-/react-testing-library-2.2.0.tgz#eaad9a237352c39f7e698e85a96b452b2f57daaa"
   dependencies:
-    dom-testing-library "^1.0.0"
-    wait-for-expect "0.4.0"
+    dom-testing-library "^1.10.0"
+    wait-for-expect "^0.5.0"
 
 react@^16.3.2:
   version "16.3.2"
@@ -3765,9 +3774,13 @@ w3c-hr-time@^1.0.1:
   dependencies:
     browser-process-hrtime "^0.1.2"
 
-wait-for-expect@0.4.0, wait-for-expect@^0.4.0:
+wait-for-expect@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/wait-for-expect/-/wait-for-expect-0.4.0.tgz#341c96ab89d6102a0169a9be6cd0de354de92c17"
+
+wait-for-expect@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.npmjs.org/wait-for-expect/-/wait-for-expect-0.5.0.tgz#cc935a94c6039967bd7760c9e9cc557f4674887a"
 
 walker@~1.0.5:
   version "1.0.7"
