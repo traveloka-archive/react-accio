@@ -1,6 +1,6 @@
 # Accio
 
-[![Build Status](https://travis-ci.com/traveloka/accio.svg?token=gaQuTqspqGQczgzMvJr7&branch=master)](https://travis-ci.com/traveloka/accio)
+[![Build Status](https://travis-ci.com/traveloka/react-accio.svg?token=gaQuTqspqGQczgzMvJr7&branch=master)](https://travis-ci.com/traveloka/react-accio)
 
 Declaratively fetch multiple APIs with a single React component.
 
