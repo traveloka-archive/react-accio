@@ -3,10 +3,10 @@ import 'dom-testing-library/extend-expect'
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Futch, FutchCacheProvider } from '../index';
+import { Accio, AccioCacheProvider } from '../index';
 import { render, wait, Simulate } from 'react-testing-library';
 
-const renderFutch = fetchState => (
+const renderAccio = fetchState => (
   <div>
     {fetchState.loading && <div data-testid="loading" />}
     {fetchState.error && <div data-testid="error" />}
@@ -41,12 +41,12 @@ const basicProps = {
 };
 
 beforeEach(() => {
-  Futch.defaults.resolver = createResolver();
+  Accio.defaults.resolver = createResolver();
 });
 
-describe('<Futch />', () => {
+describe('<Accio />', () => {
   test('Basic use', async () => {
-    const { getByTestId } = render(<Futch {...basicProps}>{renderFutch}</Futch>);
+    const { getByTestId } = render(<Accio {...basicProps}>{renderAccio}</Accio>);
 
     expect(getByTestId('loading')).toBeInTheDOM();
 
@@ -58,7 +58,7 @@ describe('<Futch />', () => {
   test('Network error', async () => {
     // simulate network error on the resolver
     const errorMessage = 'error';
-    Futch.defaults.resolver = createResolver({ error: true, errorMessage });
+    Accio.defaults.resolver = createResolver({ error: true, errorMessage });
 
     let error = null;
     const onError = jest.fn(err => {
@@ -66,9 +66,9 @@ describe('<Futch />', () => {
     });
 
     const { getByTestId } = render(
-      <Futch {...basicProps} onError={onError}>
-        {renderFutch}
-      </Futch>
+      <Accio {...basicProps} onError={onError}>
+        {renderAccio}
+      </Accio>
     );
 
     expect(getByTestId('loading')).toBeInTheDOM();
@@ -87,9 +87,9 @@ describe('<Futch />', () => {
     const onStartFetching = jest.fn();
 
     render(
-      <Futch {...basicProps} onStartFetching={onStartFetching} onShowLoading={onShowLoading} onComplete={onComplete}>
-        {renderFutch}
-      </Futch>
+      <Accio {...basicProps} onStartFetching={onStartFetching} onShowLoading={onShowLoading} onComplete={onComplete}>
+        {renderAccio}
+      </Accio>
     );
 
     // should be called immediately
@@ -105,14 +105,14 @@ describe('<Futch />', () => {
   });
 
   test('Loading timeout', async () => {
-    Futch.defaults.resolver = createResolver({ delayMs: 2 });
+    Accio.defaults.resolver = createResolver({ delayMs: 2 });
 
     const onShowLoading = jest.fn();
 
     render(
-      <Futch {...basicProps} timeout={1} onShowLoading={onShowLoading}>
-        {renderFutch}
-      </Futch>
+      <Accio {...basicProps} timeout={1} onShowLoading={onShowLoading}>
+        {renderAccio}
+      </Accio>
     );
     // should not be called on first render
     expect(onShowLoading).not.toHaveBeenCalled();
@@ -124,15 +124,15 @@ describe('<Futch />', () => {
   });
 
   test('Deferred fetch', () => {
-    const resolverSpy = jest.spyOn(Futch.defaults, 'resolver');
+    const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
     const { getByText } = render(
-      <Futch {...basicProps} defer>
+      <Accio {...basicProps} defer>
         {({ trigger }) => (
           <button onClick={trigger}>
             Go!
           </button>
         )}
-      </Futch>
+      </Accio>
     );
     expect(resolverSpy).not.toHaveBeenCalled();
     Simulate.click(getByText('Go!'));
@@ -140,25 +140,25 @@ describe('<Futch />', () => {
   });
 
   test('Cached fetch', async () => {
-    const resolverSpy = jest.spyOn(Futch.defaults, 'resolver');
+    const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
 
     function Content() {
       return (
         <div>
-          <Futch {...basicProps}>{renderFutch}</Futch>
-          <Futch {...basicProps}>{renderFutch}</Futch>
-          <Futch {...basicProps} ignoreCache>
-            {renderFutch}
-          </Futch>
+          <Accio {...basicProps}>{renderAccio}</Accio>
+          <Accio {...basicProps}>{renderAccio}</Accio>
+          <Accio {...basicProps} ignoreCache>
+            {renderAccio}
+          </Accio>
         </div>
       );
     }
 
     function App() {
       return (
-        <FutchCacheProvider>
+        <AccioCacheProvider>
           <Content />
-        </FutchCacheProvider>
+        </AccioCacheProvider>
       );
     }
 
@@ -182,13 +182,13 @@ describe('<Futch />', () => {
   });
 
   test('Freeze resolver API', () => {
-    const resolverSpy = jest.spyOn(Futch.defaults, 'resolver');
-    render(<Futch {...basicProps}>{renderFutch}</Futch>);
+    const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
+    render(<Accio {...basicProps}>{renderAccio}</Accio>);
     expect(resolverSpy).toBeCalledWith(
       basicProps.url,
       expect.objectContaining({
         body: basicProps.body,
-        method: Futch.defaults.method,
+        method: Accio.defaults.method,
       }),
       basicProps.context
     );
@@ -204,13 +204,13 @@ describe('<Futch />', () => {
 
     notFunctionTypes.forEach(type => {
       try {
-        Futch.defaults.resolver = type;
+        Accio.defaults.resolver = type;
       } catch (e) {
         errorCount.resolver++;
       }
 
       try {
-        Futch.defaults.method = type;
+        Accio.defaults.method = type;
       } catch (e) {
         errorCount.method++;
       }
@@ -218,7 +218,7 @@ describe('<Futch />', () => {
 
     unsupportedMethods.forEach(method => {
       try {
-        Futch.defaults.method = method;
+        Accio.defaults.method = method;
       } catch (e) {
         errorCount.method++;
       }

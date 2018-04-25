@@ -1,13 +1,13 @@
-# Futch
+# Accio
 
-[![Build Status](https://travis-ci.com/traveloka/futch.svg?token=gaQuTqspqGQczgzMvJr7&branch=master)](https://travis-ci.com/traveloka/futch)
+[![Build Status](https://travis-ci.com/traveloka/accio.svg?token=gaQuTqspqGQczgzMvJr7&branch=master)](https://travis-ci.com/traveloka/accio)
 
 Declaratively fetch multiple APIs with a single React component.
 
 ---
-- [Why Futch](#why-futch)
+- [Why Accio](#why-accio)
   - [Resolver as a plugin](#resolver-as-a-plugin)
-  - [Futch as a standardized interface](#futch-as-a-standardized-interface)
+  - [Accio as a standardized interface](#accio-as-a-standardized-interface)
 - [How to use](#how-to-use)
   - [Setup](#setup)
   - [Basic example](#basic-example)
@@ -22,32 +22,32 @@ Declaratively fetch multiple APIs with a single React component.
 - [Writing a resolver](#writing-a-resolver)
 - [Contributing](#contributing)
 
-## Why Futch
+## Why Accio
 
 ### Resolver as a plugin
 
-There already exists a couple of declarative fetching libraries, but Futch is different as it allows you to use different resolver for each Futch call. You can think resolvers as plugins for performing different fetch mechanisms. The ultimate goal is to have a collection of reusable plugins that hide implementation details of integrating with 3rd party services such as Twitter or Facebook APIs.
+There already exists a couple of declarative fetching libraries, but Accio is different as it allows you to use different resolver for each Accio call. You can think resolvers as plugins for performing different fetch mechanisms. The ultimate goal is to have a collection of reusable plugins that hide implementation details of integrating with 3rd party services such as Twitter or Facebook APIs.
 
 ```jsx
 // this example is just a concept and currently only has partial support
-import createTwitterResolver from 'futch-resolver-twitter';
-import createFacebookResolver from 'futch-resolver-facebook';
+import createTwitterResolver from 'accio-resolver-twitter';
+import createFacebookResolver from 'accio-resolver-facebook';
 
 const TwitterResolver = createTwitterResolver(/* twitter API key */)
 const FacebookResolver = createFacebookResolver(/* facebook API key */)
 
-<Futch url="/my/tweets" resolver={TwitterResolver}>
+<Accio url="/my/tweets" resolver={TwitterResolver}>
   {renderMyTweets}
-</Futch>
+</Accio>
 
-<Futch url="/my/facebook/posts" resolver={FacebookResolver}>
+<Accio url="/my/facebook/posts" resolver={FacebookResolver}>
   {renderMyFBPosts}
-</Futch>
+</Accio>
 ```
 
-### Futch as a standardized interface
+### Accio as a standardized interface
 
-Each 3rd party service has their own way to support integrations with our apps. Futch is an attempt to unify all of them in a simple API that helps React app developers build great user interfaces.
+Each 3rd party service has their own way to support integrations with our apps. Accio is an attempt to unify all of them in a simple API that helps React app developers build great user interfaces.
 
 ## How to use
 
@@ -55,60 +55,60 @@ Each 3rd party service has their own way to support integrations with our apps. 
 
 Using npm:
 ```
-npm install --save futch
+npm install --save react-accio
 ```
 Using yarn:
 ```
-yarn add futch
+yarn add react-accio
 ```
-Importing Futch main component:
+Importing Accio main component:
 ```js
-import { Futch } from 'futch'
+import { Accio } from 'react-accio'
 ```
 
 ### Basic example
 
 ```jsx
-<Futch url="https://www.google.com">
-  {futchProps => (
+<Accio url="https://www.google.com">
+  {accioProps => (
     <div>
-      {futchProps.loading && <Spinner />}
-      {futchProps.error && <ErrorRenderer error={futchProps.error} />}
-      {futchProps.response && <GoogleComRenderer data={futchProps.response} />}
+      {accioProps.loading && <Spinner />}
+      {accioProps.error && <ErrorRenderer error={accioProps.error} />}
+      {accioProps.response && <GoogleComRenderer data={accioProps.response} />}
     </div>
   )}
-</Futch>
+</Accio>
 ```
 
 ### Specifying fetch options
 
-Futch comes with a default `window.fetch` resolver. You can pass the options such as `method` or `headers` as Futch props:
+Accio comes with a default `window.fetch` resolver. You can pass the options such as `method` or `headers` as Accio props:
 ```jsx
-<Futch
+<Accio
   url="https://api.example.com/data"
   method="POST"
   body={{ foo: 'bar' }}
-  headers={{ "X-Powered-By": "Futch" }}
+  headers={{ "X-Powered-By": "Accio" }}
 >
-  {renderFutch}
-</Futch>
+  {renderAccio}
+</Accio>
 ```
 
 ### Deferring fetch
 
-If you don't want Futch to start fetching immediately after render, use `defer` & `trigger`:
+If you don't want Accio to start fetching immediately after render, use `defer` & `trigger`:
 ```jsx
-<Futch
+<Accio
   url="https://api.example.com/data"
   defer
 >
-  {futchProps => (
+  {accioProps => (
     <div>
-      <Button onClick={futchProps.trigger} loading={futchProps.loading}>Click me to start fetching</Button>
-      <App data={futchProps.response} />
+      <Button onClick={accioProps.trigger} loading={accioProps.loading}>Click me to start fetching</Button>
+      <App data={accioProps.response} />
     </div>
   )}
-</Futch>
+</Accio>
 ```
 
 ### Using render prop
@@ -128,30 +128,30 @@ function renderData({ loading, error, response, trigger }) {
   return null;
 }
 
-<Futch url="https://api.example.com/data">
+<Accio url="https://api.example.com/data">
   {renderData}
-</Futch>
+</Accio>
 ```
 
 ### Handling errors
 
 Error handling can be done by either rendering error component inside render prop OR specifying `onError` callback prop:
 ```jsx
-<Futch
+<Accio
   url="https://api.example.com/data"
   onError={error => Raven.captureException(error)}
 >
   {fetchProps => (
     <ErrorHandler error={fetchProps.error} />
   )}
-</Futch>
+</Accio>
 ```
 
 ### Using lifecycle props
 
 Lifecycle props provide an alternative way to react to fetch state changes. There are 4 currently supported lifecycle callbacks: `onStartFetching`, `onShowLoading`, `onComplete`, and `onError`:
 ```jsx
-<Futch
+<Accio
   url="https://api.example.com/data"
   onStartFetching={() => console.log('start fetching...')}
   onShowLoading={() => console.log('loading should now be shown...')}
@@ -159,54 +159,54 @@ Lifecycle props provide an alternative way to react to fetch state changes. Ther
   onError={error => Raven.captureException(error)}
 >
   {renderData}
-</Futch>
+</Accio>
 ```
 
 ### Delaying loading
 
-Futch supports delaying loading so that your loading component will only be rendered after specified milliseconds. Use `timeout` prop:
+Accio supports delaying loading so that your loading component will only be rendered after specified milliseconds. Use `timeout` prop:
 ```jsx
-<Futch
+<Accio
   url="https://api.example.com/data"
   timeout={600}
 >
   {renderData}
-</Futch>
+</Accio>
 ```
 
 ### Caching responses
 
 This is an experimental feature. Use it at your own risk!
 
-Futch can cache your responses if it detects at least two identical endpoints with the same request payload. But you have to make it *explicit* in order to do so:
+Accio can cache your responses if it detects at least two identical endpoints with the same request payload. But you have to make it *explicit* in order to do so:
 ```jsx
-import { FutchCacheProvider } from 'futch'
+import { Accio, AccioCacheProvider } from 'accio'
 
 // on top of your app
-<FutchCacheProvider>
+<AccioCacheProvider>
   <MyApp />
-</FutchCacheProvider>
+</AccioCacheProvider>
 
 // inside your app
 <div>
   {/* first fetch will hit the network & store to the nearest provider */}
-  <Futch url="https://api.example.com/data">{renderPageHeader}</Futch>
+  <Accio url="https://api.example.com/data">{renderPageHeader}</Accio>
 
   {/* subsequent fetches will WAIT for the first resolver to complete fetching & storing to the cache */}
   {/* only then it will read from the cache */}
-  <Futch url="https://api.example.com/data">{renderPageContent}</Futch>
+  <Accio url="https://api.example.com/data">{renderPageContent}</Accio>
 
   {/* use ignoreCache prop to skip cache reading & always fetch fresh data from network */}
-  <Futch url="https://api.example.com/data" ignoreCache>{renderPageFooter}</Futch>
+  <Accio url="https://api.example.com/data" ignoreCache>{renderPageFooter}</Accio>
 </div>
 ```
 
 ### Complex fetching
 
-Sometimes you want to do complex fetching mechanism such as polling. You cannot do that using render-prop without too many hacks. Thankfully, Futch provides an escape hatch for this use case where you can access its resolver anytime conveniently. That said, you can go back to imperative style coding by extracting Futch resolver:
+Sometimes you want to do complex fetching mechanism such as polling. You cannot do that using render-prop without too many hacks. Thankfully, Accio provides an escape hatch for this use case where you can access its resolver anytime conveniently. That said, you can go back to imperative style coding by extracting Accio resolver:
 
 ```jsx
-const fetchAPI = Futch.defaults.resolver;
+const fetchAPI = Accio.defaults.resolver;
 
 componentDidMount() {
   // start polling

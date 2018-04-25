@@ -5,13 +5,13 @@ import to from '../utils/to';
 import defaults from '../defaults/index';
 import md5 from 'md5';
 
-import { type FutchCache } from './FutchCacheContext';
+import { type AccioCache } from './AccioCacheContext';
 
 type Dict<K, V> = { [key: K]: V };
 
 export type Props = {
   // required props
-  children: (FutchState: State) => React.Node,
+  children: (AccioState: State) => React.Node,
   url: string,
 
   // fetch options
@@ -30,7 +30,7 @@ export type Props = {
   timeout?: number,
 
   // private props
-  _cache: ?FutchCache,
+  _cache: ?AccioCache,
 };
 
 type State = {
@@ -51,7 +51,7 @@ type Resolver = (
   context: Object
 ) => Promise<any>;
 
-const FutchPropKeys = new Set([
+const AccioPropKeys = new Set([
   'children',
   'url',
   'context',
@@ -70,21 +70,21 @@ function getFetchOptions(props) {
   const propKeys = Object.keys(props);
   for (let i = 0; i < propKeys.length; i++) {
     const propKey = propKeys[i];
-    if (!FutchPropKeys.has(propKey)) {
+    if (!AccioPropKeys.has(propKey)) {
       fetchOptions[propKey] = props[propKey];
     }
   }
   return fetchOptions;
 }
 
-class Futch extends React.Component<Props, State> {
+class Accio extends React.Component<Props, State> {
   static defaults: Defaults = defaults;
 
   static defaultProps = {
     defer: false,
     ignoreCache: false,
     context: {},
-    method: Futch.defaults.method,
+    method: Accio.defaults.method,
   };
 
   state = {
@@ -134,7 +134,7 @@ class Futch extends React.Component<Props, State> {
       ignoreCache,
       _cache,
     } = this.props;
-    const { resolver } = Futch.defaults;
+    const { resolver } = Accio.defaults;
     if (typeof onStartFetching === 'function') {
       onStartFetching();
     }
@@ -200,4 +200,4 @@ class Futch extends React.Component<Props, State> {
   }
 }
 
-export default Futch;
+export default Accio;

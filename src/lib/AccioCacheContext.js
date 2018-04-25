@@ -3,7 +3,7 @@ import * as React from 'react';
 
 type StorageType = 'memory' | 'localStorage';
 
-export type FutchCache = Map<string, any> | Object;
+export type AccioCache = Map<string, any> | Object;
 
 type Props = {
   children: React.Node,
@@ -13,26 +13,26 @@ type Props = {
 // $FlowFixMe
 const { Provider, Consumer } = React.createContext(null);
 
-function configureCache(type: StorageType): FutchCache {
+function configureCache(type: StorageType): AccioCache {
   if (type === 'memory') {
     return new Map();
   }
   if (type === 'localStorage') {
     throw new Error('Local storage cache support is incomplete. Please use memory in the meantime.');
   }
-  throw new Error('Unknown FutchCache storage type :/');
+  throw new Error('Unknown AccioCache storage type :/');
 }
 
-export class FutchCacheProvider extends React.Component<Props> {
+export class AccioCacheProvider extends React.Component<Props> {
   static defaultProps = {
     use: 'memory',
   };
 
-  cache: FutchCache = configureCache(this.props.use);
+  cache: AccioCache = configureCache(this.props.use);
 
   render() {
     return <Provider value={this.cache}>{this.props.children}</Provider>;
   }
 }
 
-export const FutchCacheConsumer = Consumer;
+export const AccioCacheConsumer = Consumer;

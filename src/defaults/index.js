@@ -18,7 +18,7 @@ Object.defineProperties(defaults, {
     set(method) {
       if (!['GET', 'POST'].includes(method)) {
         throw new TypeError(
-          `Invalid method ${method}. Only GET & POST are supported. Check your method assignment to Futch defaults.`
+          `Invalid method ${method}. Only GET & POST are supported. Check your method assignment to Accio defaults.`
         );
       }
       _defaults.method = method;
