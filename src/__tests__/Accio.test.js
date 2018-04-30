@@ -1,7 +1,8 @@
-import 'dom-testing-library/extend-expect'
+import 'dom-testing-library/extend-expect';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import defaultResolver from '../defaults/resolver';
 
 import { Accio, AccioCacheProvider } from '../index';
 import { render, wait, Simulate } from 'react-testing-library';
@@ -10,7 +11,9 @@ const renderAccio = fetchState => (
   <div>
     {fetchState.loading && <div data-testid="loading" />}
     {fetchState.error && <div data-testid="error" />}
-    {fetchState.response && <div data-testid="response">{JSON.stringify(fetchState.response)}</div>}
+    {fetchState.response && (
+      <div data-testid="response">{JSON.stringify(fetchState.response)}</div>
+    )}
   </div>
 );
 
@@ -46,7 +49,9 @@ beforeEach(() => {
 
 describe('<Accio />', () => {
   test('Basic use', async () => {
-    const { getByTestId } = render(<Accio {...basicProps}>{renderAccio}</Accio>);
+    const { getByTestId } = render(
+      <Accio {...basicProps}>{renderAccio}</Accio>
+    );
 
     expect(getByTestId('loading')).toBeInTheDOM();
 
@@ -87,7 +92,12 @@ describe('<Accio />', () => {
     const onStartFetching = jest.fn();
 
     render(
-      <Accio {...basicProps} onStartFetching={onStartFetching} onShowLoading={onShowLoading} onComplete={onComplete}>
+      <Accio
+        {...basicProps}
+        onStartFetching={onStartFetching}
+        onShowLoading={onShowLoading}
+        onComplete={onComplete}
+      >
         {renderAccio}
       </Accio>
     );
@@ -127,11 +137,7 @@ describe('<Accio />', () => {
     const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
     const { getByText } = render(
       <Accio {...basicProps} defer>
-        {({ trigger }) => (
-          <button onClick={trigger}>
-            Go!
-          </button>
-        )}
+        {({ trigger }) => <button onClick={trigger}>Go!</button>}
       </Accio>
     );
     expect(resolverSpy).not.toHaveBeenCalled();
@@ -225,6 +231,62 @@ describe('<Accio />', () => {
     });
 
     expect(errorCount.resolver).toBe(notFunctionTypes.length);
-    expect(errorCount.method).toBe(notFunctionTypes.length + unsupportedMethods.length);
+    expect(errorCount.method).toBe(
+      notFunctionTypes.length + unsupportedMethods.length
+    );
+  });
+});
+
+describe('Accio.defaults.resolver', () => {
+  beforeEach(() => {
+    Accio.defaults.resolver = defaultResolver;
+
+    window.fetch = jest.fn((url, options) => {
+      return Promise.resolve({
+        json: () => {
+          if (url === basicProps.url) {
+            return Promise.resolve({
+              data: {
+                foo: 'bar',
+              },
+            });
+          }
+          return Promise.resolve({});
+        },
+      });
+      return Promise.resolve();
+    });
+  });
+
+  it('should behave correctly', async () => {
+    const { getByTestId } = render(
+      <Accio {...basicProps}>
+        {fetchProps => (
+          <div>
+            {fetchProps.response && (
+              <div data-testid="responseContainer">
+                {fetchProps.response.data.foo}
+              </div>
+            )}
+          </div>
+        )}
+      </Accio>
+    );
+
+    await wait(() => {
+      expect(getByTestId('responseContainer')).toHaveTextContent('bar');
+    });
+  });
+
+  it('should pass down url to window.fetch 1st argument as well as fetchOptions to window.fetch 2nd argument', () => {
+    render(<Accio {...basicProps}>{() => null}</Accio>);
+
+    expect(window.fetch).toHaveBeenCalledWith(
+      basicProps.url,
+      expect.objectContaining({
+        body: {},
+        method: 'GET',
+      })
+    );
   });
 });

@@ -224,8 +224,33 @@ componentDidMount() {
 
 ## Writing a resolver
 
-TODO
+When you buy a car, you get a working vehicle already assembled and preconfigured for you by the manufacturer. But sometimes you want more powers out of it, so instead of buying a new car (which would cost you another fortune) you can just replace the engine with a superior one, leaving the body, interior, and everything else the same. Accio works the same way, it allows you to replace the built-in resolver with a custom one that is more suitable to your use cases. Think of an Accio resolver as the engine in the car analogy, i.e., **if you want more control over how you fetch data from the network (e.g., use `axios` instead of `window.fetch`) just write your own custom resolver**.
+
+Accio resolver has the following typedef:
+```js
+type Resolver = (
+  url: string,
+  fetchOptions: Object,
+  context: Object
+) => Promise<any>;
+```
+
+Resolver arguments are given based on the following rules:
+1. url => Accio `url` prop
+2. fetchOptions => any Accio prop that is not:
+    - 'children',
+    - 'url',
+    - 'context',
+    - 'defer',
+    - 'ignoreCache',
+    - 'onComplete',
+    - 'onError',
+    - 'onShowLoading',
+    - 'onStartFetching',
+    - 'timeout',
+    - '_cache'
+3. context => Accio `context` prop
 
 ## Contributing
 
-TODO
+See [CONTRIBUTING.md](CONTRIBUTING.md)

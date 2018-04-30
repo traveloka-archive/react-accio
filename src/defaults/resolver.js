@@ -1,16 +1,8 @@
 import to from '../utils/to';
 
 // default resolver
-export default async function resolver(url, data) {
-  const [err, res] = await to(
-    fetch(url, {
-      body: JSON.stringify(data),
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-  );
+export default async function resolver(url, fetchOptions) {
+  const [err, res] = await to(fetch(url, fetchOptions));
   if (err) {
     throw new Error('Accio error: ' + err.message);
   }
