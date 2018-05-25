@@ -1,9 +1,21 @@
 {
-  "name": "rollup-starter-lib",
+  "name": "react-accio",
   "version": "0.1.0",
-  "private": true,
+  "description": "Declaratively fetch multiple APIs with a single React component.",
   "main": "dist/Accio.cjs.js",
   "module": "dist/Accio.esm.js",
+  "keywords": [
+    "react",
+    "declarative",
+    "data-fetching",
+    "api",
+    "render-prop"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/traveloka/react-accio/issues"
+  },
+  "homepage": "https://github.com/traveloka/react-accio",
   "peerDependencies": {
     "react": "^16.3.2"
   },
