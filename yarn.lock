@@ -1202,9 +1202,9 @@ dom-testing-library@^1.10.0:
     pretty-format "^22.4.3"
     wait-for-expect "^0.4.0"
 
-dom-testing-library@^1.7.1:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/dom-testing-library/-/dom-testing-library-1.7.1.tgz#32028cc1e913109fb300e74cec4164f1dd65f8c5"
+dom-testing-library@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/dom-testing-library/-/dom-testing-library-2.3.2.tgz#640a8d6c614ed84c455ef536c3166238db3b1499"
   dependencies:
     jest-dom "^1.0.0"
     mutationobserver-shim "^0.3.2"
