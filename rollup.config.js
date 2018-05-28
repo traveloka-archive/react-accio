@@ -4,7 +4,12 @@ import pkg from './package.json';
 export default [
   {
     input: 'src/index.js',
-    external: ['hoist-non-react-statics', 'md5', 'react'],
+    external: [
+      'hoist-non-react-statics',
+      'md5',
+      'react',
+      'babel-runtime/regenerator',
+    ],
     output: [
       { file: pkg.main, format: 'cjs' },
       { file: pkg.module, format: 'es' },
