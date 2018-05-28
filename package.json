@@ -1,6 +1,6 @@
 {
   "name": "react-accio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Declaratively fetch multiple APIs with a single React component.",
   "main": "dist/Accio.cjs.js",
   "module": "dist/Accio.esm.js",
