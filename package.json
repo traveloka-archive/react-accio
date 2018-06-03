@@ -20,8 +20,7 @@
     "react": "^16.3.2"
   },
   "dependencies": {
-    "hoist-non-react-statics": "^2.5.0",
-    "md5": "^2.2.1"
+    "hoist-non-react-statics": "^2.5.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

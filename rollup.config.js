@@ -6,7 +6,6 @@ export default [
     input: 'src/index.js',
     external: [
       'hoist-non-react-statics',
-      'md5',
       'react',
       'babel-runtime/regenerator',
     ],

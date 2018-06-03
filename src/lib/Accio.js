@@ -3,7 +3,6 @@ import * as React from 'react';
 
 import to from '../utils/to';
 import defaults from '../defaults/index';
-import md5 from 'md5';
 
 import { type AccioCache } from './AccioCacheContext';
 
@@ -146,20 +145,19 @@ class Accio extends React.Component<Props, State> {
       if (fetchOptions.body) {
         cacheKey = cacheKey + JSON.stringify(fetchOptions.body);
       }
-      const hash = md5(cacheKey);
       // check for existing cache entry
-      if (_cache.has(hash)) {
+      if (_cache.has(cacheKey)) {
         // cache hit
-        return Promise.resolve(_cache.get(hash));
+        return Promise.resolve(_cache.get(cacheKey));
       } else {
         // cache miss
         const promise = resolver(url, fetchOptions, context);
         // store promise in cache
-        _cache.set(hash, promise);
+        _cache.set(cacheKey, promise);
         return promise.then((response: any) => {
           // when resolved, store the real
           // response to the cache
-          _cache.set(hash, response);
+          _cache.set(cacheKey, response);
           return response;
         });
       }
