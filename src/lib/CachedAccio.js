@@ -8,19 +8,26 @@ import { AccioCacheConsumer, type AccioCache } from './AccioCacheContext';
 
 class CachedAccio extends React.Component<Props> {
   renderChild(_cache: AccioCache) {
-    const { children, ...props } = this.props;
+    const { children, forwardedRef, ...props } = this.props;
     return (
-      <Accio {...props} _cache={_cache}>
+      <Accio {...props} ref={forwardedRef} _cache={_cache}>
         {children}
       </Accio>
     );
   }
 
   render() {
-    return <AccioCacheConsumer>{this.renderChild.bind(this)}</AccioCacheConsumer>;
+    return (
+      <AccioCacheConsumer>{this.renderChild.bind(this)}</AccioCacheConsumer>
+    );
   }
 }
 
-hoistStatics(CachedAccio, Accio);
+// $FlowFixMe https://github.com/facebook/flow/issues/6103
+const CachedAccioWithRef = React.forwardRef((props, ref) => (
+  <CachedAccio {...props} forwardedRef={ref} />
+));
 
-export default CachedAccio;
+hoistStatics(CachedAccioWithRef, Accio);
+
+export default CachedAccioWithRef;

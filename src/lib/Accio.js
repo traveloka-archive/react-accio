@@ -3,6 +3,7 @@ import * as React from 'react';
 
 import to from '../utils/to';
 import defaults from '../defaults/index';
+import getCacheKey from '../utils/getCacheKey';
 
 import { type AccioCache } from './AccioCacheContext';
 
@@ -30,6 +31,7 @@ export type Props = {
 
   // private props
   _cache: ?AccioCache,
+  forwardedRef: ?{ current: null | Accio };
 };
 
 type State = {
@@ -76,6 +78,13 @@ function getFetchOptions(props) {
   return fetchOptions;
 }
 
+const PreloadStatus = {
+  IDLE: 'IDLE',
+  PRELOADING: 'PRELOADING',
+  PRELOADED: 'PRELOADED',
+  PRELOAD_ERROR: 'PRELOAD_ERROR',
+};
+
 class Accio extends React.Component<Props, State> {
   static defaults: Defaults = defaults;
 
@@ -93,7 +102,36 @@ class Accio extends React.Component<Props, State> {
     trigger: this.doWork.bind(this),
   };
 
+  fetchOptions: Object = getFetchOptions(this.props);
+
+  cacheKey: string = getCacheKey(this.props.url, this.fetchOptions);
+
+  preloadStatus: string = PreloadStatus.IDLE;
+
+  preloadError: ?Error = null;
+
   timer: TimeoutID;
+
+  async preload() {
+    const { _cache } = this.props;
+    if (_cache) {
+      this.preloadStatus = PreloadStatus.PRELOADING;
+
+      const [err, res] = await to(this.doFetch.call(this));
+      if (err) {
+        this.preloadStatus = PreloadStatus.PRELOAD_ERROR;
+        this.preloadError = err;
+        return;
+      }
+      
+      this.preloadStatus = PreloadStatus.PRELOADED;
+      return res;
+    }
+    console.warn(
+      'Preloading without cache is not supported. ' +
+        'This can be fixed by wrapping your app with <AccioCacheProvider />.'
+    );
+  }
 
   componentDidMount() {
     if (this.props.defer === true) {
@@ -102,8 +140,25 @@ class Accio extends React.Component<Props, State> {
     this.doWork.call(this);
   }
 
+  componentWillUnmount() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+  }
+
   async doWork() {
-    const { timeout } = this.props;
+    const { _cache, onStartFetching, timeout } = this.props;
+
+    if (this.preloadStatus === PreloadStatus.PRELOADED && _cache) {
+      const preloadedResponse = _cache.get(this.cacheKey);
+      this.setResponse.call(this, preloadedResponse);
+      return;
+    }
+    
+    if (this.preloadStatus === PreloadStatus.PRELOAD_ERROR && this.preloadError) {
+      this.setError.call(this, this.preloadError);
+      return;
+    }
 
     if (typeof timeout === 'number') {
       this.timer = setTimeout(this.setLoading.bind(this, true), timeout);
@@ -111,6 +166,9 @@ class Accio extends React.Component<Props, State> {
       this.setLoading.call(this, true);
     }
 
+    if (typeof onStartFetching === 'function') {
+      onStartFetching();
+    }
     const [err, response] = await to(this.doFetch.call(this));
 
     if (err) {
@@ -126,32 +184,25 @@ class Accio extends React.Component<Props, State> {
   }
 
   doFetch(): Promise<*> {
-    const {
-      url,
-      context,
-      onStartFetching,
-      ignoreCache,
-      _cache,
-    } = this.props;
+    const { _cache, context, ignoreCache, url, onStartFetching } = this.props;
     const { resolver } = Accio.defaults;
-    if (typeof onStartFetching === 'function') {
-      onStartFetching();
-    }
-    const fetchOptions = getFetchOptions(this.props);
 
-    // resolve from cache if applicable
+    // try resolve from cache,
+    // otherwise resolve from network
+
+    const resolveNetwork = () => {
+      return resolver(url, this.fetchOptions, context);
+    };
+
     if (_cache && ignoreCache === false) {
-      let cacheKey = url;
-      if (fetchOptions.body) {
-        cacheKey = cacheKey + JSON.stringify(fetchOptions.body);
-      }
+      const { cacheKey } = this;
       // check for existing cache entry
       if (_cache.has(cacheKey)) {
-        // cache hit
+        // cache hit --> return cached entry
         return Promise.resolve(_cache.get(cacheKey));
       } else {
-        // cache miss
-        const promise = resolver(url, fetchOptions, context);
+        // cache miss --> resolve network
+        const promise = resolveNetwork();
         // store promise in cache
         _cache.set(cacheKey, promise);
         return promise.then((response: any) => {
@@ -163,7 +214,7 @@ class Accio extends React.Component<Props, State> {
       }
     }
 
-    return resolver(url, fetchOptions, context);
+    return resolveNetwork();
   }
 
   setLoading(loading: boolean) {
