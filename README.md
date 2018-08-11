@@ -18,6 +18,7 @@ Declaratively fetch multiple APIs with a single React component.
   - [Using lifecycle props](#using-lifecycle-props)
   - [Delaying loading](#delaying-loading)
   - [Caching responses](#caching-responses)
+  - [Preloading](#preloading)
   - [Complex fetching](#complex-fetching)
 - [Writing a resolver](#writing-a-resolver)
 - [Contributing](#contributing)
@@ -176,11 +177,9 @@ Accio supports delaying loading so that your loading component will only be rend
 
 ### Caching responses
 
-This is an experimental feature. Use it at your own risk!
-
 Accio can cache your responses if it detects at least two identical endpoints with the same request payload. But you have to make it *explicit* in order to do so:
 ```jsx
-import { Accio, AccioCacheProvider } from 'accio'
+import { Accio, AccioCacheProvider } from 'react-accio'
 
 // on top of your app
 <AccioCacheProvider>
@@ -199,6 +198,35 @@ import { Accio, AccioCacheProvider } from 'accio'
   {/* use ignoreCache prop to skip cache reading & always fetch fresh data from network */}
   <Accio url="https://api.example.com/data" ignoreCache>{renderPageFooter}</Accio>
 </div>
+```
+
+### Preloading
+
+You can preload _deferred_ Accio calls ahead of time so that by the time you need the data, you will get it instantly.
+
+Let's say you want to preload the cache whenever your users hover over your fetch trigger button:
+```jsx
+import { Accio, AccioCacheProvider } from 'react-accio'
+
+// Preloading only works when `AccioCacheProvider` is around.
+<AccioCacheProvider>
+  <MyApp />
+</AccioCacheProvider>
+
+// Prepare a ref
+const resource = React.createRef();
+
+// Your app
+<Accio url="https://api.example.com/data" defer ref={resource}>
+  {({ trigger }) => (
+    <button
+      onClick={trigger}
+      onMouseOver={() => resource.current.preload()}
+    >
+      Fetch
+    </button>
+  )}
+</Accio>
 ```
 
 ### Complex fetching

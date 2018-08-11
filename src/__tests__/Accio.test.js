@@ -235,6 +235,97 @@ describe('<Accio />', () => {
       notFunctionTypes.length + unsupportedMethods.length
     );
   });
+
+  test('Preload deferred fetch', async () => {
+    const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
+
+    const resource = React.createRef();
+    const { getByText } = render(
+      <AccioCacheProvider>
+        <Accio {...basicProps} defer ref={resource}>
+          {({ trigger, loading, response }) => (
+            <div>
+              <button onClick={trigger}>Go!</button>
+              {loading && <div>Loading indicator</div>}
+              {response && <div>Response text</div>}
+            </div>
+          )}
+        </Accio>
+      </AccioCacheProvider>
+    );
+
+    expect(resolverSpy).not.toHaveBeenCalled();
+    await resource.current.preload();
+    expect(resolverSpy).toHaveBeenCalled();
+
+    // try repeat preloading
+    await resource.current.preload();
+    // preloading is no-op once cache has been warmed up
+    expect(resolverSpy.mock.calls.length).toBe(1);
+
+    // it should not yield the response just yet
+    expect(() => {
+      getByText('Response text');
+    }).toThrow();
+
+    // trigerring Accio should not call resolver again
+    Simulate.click(getByText('Go!'));
+    expect(resolverSpy.mock.calls.length).toBe(1);
+
+    // already preloaded, no need to show loading indicator
+    expect(() => {
+      getByText('Loading indicator')
+    }).toThrow();
+
+    // instant, no "wait-for-expect" needed
+    expect(getByText('Response text')).toBeInTheDOM();
+  });
+
+  test('Network error when preloading', async () => {
+    // simulate network error on the resolver
+    const errorMessage = 'error';
+    const originalResolver = jest.fn(Accio.defaults.resolver);
+    Accio.defaults.resolver = createResolver({ error: true, errorMessage });
+    
+    const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
+
+    let error = null;
+    const onError = jest.fn(err => {
+      error = err;
+    });
+
+    const resource = React.createRef();
+    const { getByText } = render(
+      <AccioCacheProvider>
+        <Accio {...basicProps} defer ref={resource} onError={onError}>
+          {({ trigger, loading, response }) => (
+            <div>
+              <button onClick={trigger}>Go!</button>
+              {loading && <div>Loading indicator</div>}
+              {response && <div>Response text</div>}
+              {error && <div>Error message</div>}
+            </div>
+          )}
+        </Accio>
+      </AccioCacheProvider>
+    );
+
+    expect(resolverSpy.mock.calls.length).toBe(0);
+
+    await resource.current.preload();
+    expect(resolverSpy.mock.calls.length).toBe(1);
+
+    // remove error
+    Accio.defaults.resolver = originalResolver;
+
+    // allow retry if previous one fails
+    await resource.current.preload();
+    expect(originalResolver.mock.calls.length).toBe(1);
+
+    // once success, disallow retry (TODO: unless cache is invalidated)
+    await resource.current.preload();
+    expect(originalResolver.mock.calls.length).toBe(1);
+  });
 });
 
 describe('Accio.defaults.resolver', () => {
