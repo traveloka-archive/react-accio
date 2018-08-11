@@ -258,6 +258,11 @@ describe('<Accio />', () => {
     await resource.current.preload();
     expect(resolverSpy).toHaveBeenCalled();
 
+    // try repeat preloading
+    await resource.current.preload();
+    // preloading is no-op once cache has been warmed up
+    expect(resolverSpy.mock.calls.length).toBe(1);
+
     // it should not yield the response just yet
     expect(() => {
       getByText('Response text');
@@ -279,7 +284,10 @@ describe('<Accio />', () => {
   test('Network error when preloading', async () => {
     // simulate network error on the resolver
     const errorMessage = 'error';
+    const originalResolver = jest.fn(Accio.defaults.resolver);
     Accio.defaults.resolver = createResolver({ error: true, errorMessage });
+    
+    const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
 
     let error = null;
     const onError = jest.fn(err => {
@@ -302,17 +310,21 @@ describe('<Accio />', () => {
       </AccioCacheProvider>
     );
 
-    await resource.current.preload()
+    expect(resolverSpy.mock.calls.length).toBe(0);
 
-    // errors that occur during preloading
-    // will not be shown immediately.
-    expect(onError).not.toHaveBeenCalled();
+    await resource.current.preload();
+    expect(resolverSpy.mock.calls.length).toBe(1);
 
-    Simulate.click(getByText('Go!'));
+    // remove error
+    Accio.defaults.resolver = originalResolver;
 
-    // instant
-    expect(getByText('Error message')).toBeInTheDOM();
-    expect(onError).toHaveBeenCalledWith(error);
+    // allow retry if previous one fails
+    await resource.current.preload();
+    expect(originalResolver.mock.calls.length).toBe(1);
+
+    // once success, disallow retry (TODO: unless cache is invalidated)
+    await resource.current.preload();
+    expect(originalResolver.mock.calls.length).toBe(1);
   });
 });
 
