@@ -7,7 +7,7 @@ import defaultResolver from '../defaults/resolver';
 import { Accio, AccioCacheProvider } from '../index';
 import { render, wait, Simulate } from 'react-testing-library';
 
-const renderAccio = fetchState => (
+const renderAccio = (fetchState) => (
   <div>
     {fetchState.loading && <div data-testid="loading" />}
     {fetchState.error && <div data-testid="error" />}
@@ -21,7 +21,7 @@ const mockAPIResponse = {
   foo: 'bar',
 };
 
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function createResolver({ delayMs, error = false, errorMessage } = {}) {
   return async () => {
@@ -66,7 +66,7 @@ describe('<Accio />', () => {
     Accio.defaults.resolver = createResolver({ error: true, errorMessage });
 
     let error = null;
-    const onError = jest.fn(err => {
+    const onError = jest.fn((err) => {
       error = err;
     });
 
@@ -173,7 +173,7 @@ describe('<Accio />', () => {
     ReactDOM.render(<App />, div);
 
     // flush all promises
-    await new Promise(resolve => setImmediate(resolve));
+    await new Promise((resolve) => setImmediate(resolve));
 
     // expect resolver to be called twice because
     // the third fetch will always hit the network (ignoreCache)
@@ -208,7 +208,7 @@ describe('<Accio />', () => {
       method: 0,
     };
 
-    notFunctionTypes.forEach(type => {
+    notFunctionTypes.forEach((type) => {
       try {
         Accio.defaults.resolver = type;
       } catch (e) {
@@ -222,7 +222,7 @@ describe('<Accio />', () => {
       }
     });
 
-    unsupportedMethods.forEach(method => {
+    unsupportedMethods.forEach((method) => {
       try {
         Accio.defaults.method = method;
       } catch (e) {
@@ -274,7 +274,7 @@ describe('<Accio />', () => {
 
     // already preloaded, no need to show loading indicator
     expect(() => {
-      getByText('Loading indicator')
+      getByText('Loading indicator');
     }).toThrow();
 
     // instant, no "wait-for-expect" needed
@@ -286,11 +286,11 @@ describe('<Accio />', () => {
     const errorMessage = 'error';
     const originalResolver = jest.fn(Accio.defaults.resolver);
     Accio.defaults.resolver = createResolver({ error: true, errorMessage });
-    
+
     const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
 
     let error = null;
-    const onError = jest.fn(err => {
+    const onError = jest.fn((err) => {
       error = err;
     });
 
@@ -326,6 +326,45 @@ describe('<Accio />', () => {
     await resource.current.preload();
     expect(originalResolver.mock.calls.length).toBe(1);
   });
+
+  test('Always fetch with the latest fetch options', () => {
+    const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
+
+    const requestBody = {
+      foo: 'bar',
+    };
+
+    class App extends React.Component {
+      state = {
+        body: null,
+      };
+
+      fetch = (trigger) => () => {
+        this.setState(
+          {
+            body: requestBody,
+          },
+          trigger
+        );
+      };
+
+      render() {
+        return (
+          <Accio {...basicProps} body={this.state.body} defer>
+            {({ trigger }) => (
+              <button onClick={this.fetch(trigger)}>Fetch</button>
+            )}
+          </Accio>
+        );
+      }
+    }
+
+    const { getByText } = render(<App />);
+
+    expect(resolverSpy).not.toHaveBeenCalled();
+    Simulate.click(getByText('Fetch'));
+    expect(resolverSpy.mock.calls[0][1].body).toEqual(requestBody);
+  });
 });
 
 describe('Accio.defaults.resolver', () => {
@@ -352,7 +391,7 @@ describe('Accio.defaults.resolver', () => {
   it('should behave correctly', async () => {
     const { getByTestId } = render(
       <Accio {...basicProps}>
-        {fetchProps => (
+        {(fetchProps) => (
           <div>
             {fetchProps.response && (
               <div data-testid="responseContainer">
