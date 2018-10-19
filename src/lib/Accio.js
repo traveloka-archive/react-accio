@@ -102,10 +102,6 @@ class Accio extends React.Component<Props, State> {
     trigger: this.doWork.bind(this),
   };
 
-  fetchOptions: Object = getFetchOptions(this.props);
-
-  cacheKey: string = getCacheKey(this.props.url, this.fetchOptions);
-
   preloadStatus: number = PreloadStatus.IDLE;
 
   preloadError: ?Error = null;
@@ -152,10 +148,12 @@ class Accio extends React.Component<Props, State> {
   }
 
   async doWork() {
-    const { _cache, onStartFetching, timeout } = this.props;
+    const { _cache, onStartFetching, timeout, url } = this.props;
+
+    const cacheKey = getCacheKey(url, getFetchOptions(this.props));
 
     if (_cache && this.preloadStatus === PreloadStatus.PRELOADED) {
-      const preloadedResponse = _cache.get(this.cacheKey);
+      const preloadedResponse = _cache.get(cacheKey);
       this.setResponse.call(this, preloadedResponse);
       return;
     }
@@ -187,15 +185,17 @@ class Accio extends React.Component<Props, State> {
     const { _cache, context, ignoreCache, url, onStartFetching } = this.props;
     const { resolver } = Accio.defaults;
 
+    const fetchOptions = getFetchOptions(this.props);
+
     // try resolve from cache,
     // otherwise resolve from network
 
     const resolveNetwork = () => {
-      return resolver(url, this.fetchOptions, context);
+      return resolver(url, fetchOptions, context);
     };
 
     if (_cache && ignoreCache === false) {
-      const { cacheKey } = this;
+      const cacheKey = getCacheKey(url, fetchOptions);
       // check for existing cache entry
       if (_cache.has(cacheKey)) {
         // cache hit --> return cached entry
@@ -212,7 +212,7 @@ class Accio extends React.Component<Props, State> {
             _cache.set(cacheKey, response);
             return response;
           })
-          .catch(err => {
+          .catch((err) => {
             _cache.delete(cacheKey);
             throw err;
           });
