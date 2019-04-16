@@ -60,6 +60,53 @@ describe('<Accio />', () => {
     });
   });
 
+  test('Updated fetchKey should trigger refetch', async () => {
+    const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
+
+    class App extends React.Component {
+      state = {
+        body: { foo: 'bar' },
+      };
+
+      handleClick = () => {
+        this.setState({
+          body: { foo: 'baz' },
+        });
+      };
+
+      render() {
+        return (
+          <React.Fragment>
+            <Accio
+              {...basicProps}
+              body={this.state.body}
+              fetchKey={({ body }) => JSON.stringify(body)}
+            >
+              {renderAccio}
+            </Accio>
+            <button onClick={this.handleClick}>Update</button>
+          </React.Fragment>
+        );
+      }
+    }
+
+    const { getByText, getByTestId } = render(<App />);
+
+    await wait();
+
+    expect(resolverSpy).toHaveBeenCalledTimes(1);
+    expect(getByTestId('response')).toBeInTheDOM();
+    
+    // update!!
+    const updateBtn = getByText('Update');
+    Simulate.click(updateBtn);
+
+    await wait();
+
+    // should resolve again
+    expect(resolverSpy).toHaveBeenCalledTimes(2);
+  });
+
   test('Network error', async () => {
     // simulate network error on the resolver
     const errorMessage = 'error';
