@@ -112,10 +112,10 @@ If you don't want Accio to start fetching immediately after render, use `defer` 
 </Accio>
 ```
 
-### Refetch without defer/trigger
+### Using fetchKey prop
 
-Use fetchKey props if you want to trigger fetch based on your props.
-This example will trigger fetch when url props change:
+Use fetchKey prop if you want to re-trigger fetch based on your props.
+This example will trigger fetch when prop `url` change:
 
 ```jsx
 function fetchKey(props) {
