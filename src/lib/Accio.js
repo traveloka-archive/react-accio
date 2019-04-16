@@ -147,6 +147,13 @@ class Accio extends React.Component<Props, State> {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    const { fetchKey } = this.props;
+    if (fetchKey && fetchKey(this.props) !== fetchKey(prevProps)) {
+      this.doWork.call(this);
+    }
+  }
+
   async doWork() {
     const { _cache, onStartFetching, timeout, url } = this.props;
 
@@ -212,7 +219,7 @@ class Accio extends React.Component<Props, State> {
             _cache.set(cacheKey, response);
             return response;
           })
-          .catch((err) => {
+          .catch(err => {
             _cache.delete(cacheKey);
             throw err;
           });
