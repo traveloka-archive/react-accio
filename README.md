@@ -112,6 +112,21 @@ If you don't want Accio to start fetching immediately after render, use `defer` 
 </Accio>
 ```
 
+### Refetch without defer/trigger
+
+Use fetchKey props if you want to trigger fetch based on your props.
+This example will trigger fetch when url props change:
+
+```jsx
+function fetchKey(props) {
+  return props.url;
+}
+
+<Accio url="https://api.example.com/data" fetchKey={fetchKey}>
+  {renderData}
+</Accio>
+```
+
 ### Using render prop
 
 Render prop exposes 4 properties: loading, error, response, and trigger*:
