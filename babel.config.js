@@ -1,9 +1,10 @@
+const env = process.env.NODE_ENV;
+
 module.exports = function(api) {
   api.cache(true);
 
-  // prettier-ignore
   const presets = [
-    ['@babel/preset-env', { modules: false }],
+    ['@babel/preset-env', { modules: env === 'test' ? 'commonjs' : false }],
     '@babel/preset-react',
     '@babel/preset-flow',
   ];
