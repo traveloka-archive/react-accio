@@ -49,12 +49,11 @@ beforeEach(() => {
 
 describe('<Accio />', () => {
   test('Basic use', async () => {
-    const { getByTestId, debug } = render(
+    const { getByTestId } = render(
       <Accio {...basicProps}>{renderAccio}</Accio>
     );
 
-    const loading = getByTestId('loading');
-    expect(loading).toBeVisible();
+    expect(getByTestId('loading')).toBeVisible();
 
     await wait(() => {
       expect(getByTestId('response')).toBeVisible();
