@@ -53,10 +53,10 @@ describe('<Accio />', () => {
       <Accio {...basicProps}>{renderAccio}</Accio>
     );
 
-    expect(getByTestId('loading')).toBeInTheDOM();
+    expect(getByTestId('loading')).toBeInTheDocument();
 
     await wait(() => {
-      expect(getByTestId('response')).toBeInTheDOM(true);
+      expect(getByTestId('response')).toBeInTheDocument();
     });
   });
 
@@ -95,7 +95,7 @@ describe('<Accio />', () => {
     await wait();
 
     expect(resolverSpy).toHaveBeenCalledTimes(1);
-    expect(getByTestId('response')).toBeInTheDOM();
+    expect(getByTestId('response')).toBeInTheDocument();
     
     // update!!
     const updateBtn = getByText('Update');
@@ -123,10 +123,10 @@ describe('<Accio />', () => {
       </Accio>
     );
 
-    expect(getByTestId('loading')).toBeInTheDOM();
+    expect(getByTestId('loading')).toBeInTheDocument();
 
     await wait(() => {
-      expect(getByTestId('error')).toBeInTheDOM();
+      expect(getByTestId('error')).toBeInTheDocument();
     });
 
     // test onError lifecycle hook
@@ -325,7 +325,7 @@ describe('<Accio />', () => {
     }).toThrow();
 
     // instant, no "wait-for-expect" needed
-    expect(getByText('Response text')).toBeInTheDOM();
+    expect(getByText('Response text')).toBeInTheDocument();
   });
 
   test('Network error when preloading', async () => {
