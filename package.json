@@ -1,6 +1,6 @@
 {
   "name": "react-accio",
-  "version": "2.0.0-next.1",
+  "version": "2.0.0-next.2",
   "description": "Declaratively fetch multiple APIs with a single React component.",
   "source": "src/index.js",
   "main": "dist/index.js",
