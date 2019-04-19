@@ -41,6 +41,7 @@
     "dev": "microbundle watch",
     "test": "jest",
     "pretest": "yarn build",
+    "prepublish": "yarn build",
     "flow": "flow"
   },
   "files": [
