@@ -109,30 +109,30 @@ class Accio extends React.Component<Props, State> {
 
   timer: TimeoutID;
 
-  async preload() {
-    const { _cache } = this.props;
+  preload() {
+    return Promise.resolve().then(() => {
+      const { _cache } = this.props;
 
-    if (!_cache) {
-      console.warn(
-        'Preloading without cache is not supported. ' +
-          'This can be fixed by wrapping your app with <AccioCacheProvider />.'
-      );
-      return;
-    }
-
-    if (this.preloadStatus < PreloadStatus.PRELOADING) {
-      this.preloadStatus = PreloadStatus.PRELOADING;
-
-      const [err, res] = await to(this.doFetch.call(this));
-      if (err) {
-        this.preloadStatus = PreloadStatus.PRELOAD_ERROR;
-        this.preloadError = err;
+      if (!_cache) {
+        console.warn(
+          'Preloading without cache is not supported. ' +
+            'This can be fixed by wrapping your app with <AccioCacheProvider />.'
+        );
         return;
       }
-
-      this.preloadStatus = PreloadStatus.PRELOADED;
-      return res;
-    }
+      if (this.preloadStatus < PreloadStatus.PRELOADING) {
+        this.preloadStatus = PreloadStatus.PRELOADING;
+        return to(this.doFetch.call(this)).then(([err, res]) => {
+          if (err) {
+            this.preloadStatus = PreloadStatus.PRELOAD_ERROR;
+            this.preloadError = err;
+            return;
+          }
+          this.preloadStatus = PreloadStatus.PRELOADED;
+          return res;
+        });
+      }
+    });
   }
 
   componentDidMount() {
@@ -220,7 +220,7 @@ class Accio extends React.Component<Props, State> {
             _cache.set(cacheKey, response);
             return response;
           })
-          .catch(err => {
+          .catch((err) => {
             _cache.delete(cacheKey);
             throw err;
           });
