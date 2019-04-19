@@ -40,7 +40,15 @@
     source-map "^0.5.0"
     trim-right "^1.0.1"
 
-"@babel/helper-create-class-features-plugin@^7.2.1":
+"@babel/helper-builder-react-jsx@^7.3.0":
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/@babel/helper-builder-react-jsx/-/helper-builder-react-jsx-7.3.0.tgz#a1ac95a5d2b3e88ae5e54846bf462eeb81b318a4"
+  integrity sha512-MjA9KgwCuPEkQd9ncSXvSyJ5y+j2sICHyrI0M3L+6fnS4wMSNDc1ARXsbTfbb2cXHn17VisSnU/sHFTCxVxSMw==
+  dependencies:
+    "@babel/types" "^7.3.0"
+    esutils "^2.0.0"
+
+"@babel/helper-create-class-features-plugin@^7.2.1", "@babel/helper-create-class-features-plugin@^7.4.0":
   version "7.4.3"
   resolved "https://registry.yarnpkg.com/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.4.3.tgz#5bbd279c6c3ac6a60266b89bbfe7f8021080a1ef"
   integrity sha512-UMl3TSpX11PuODYdWGrUeW6zFkdYhDn7wRLrOuNVM6f9L+S9CzmDXYyrp3MTHcwWjnzur1f/Op8A7iYZWya2Yg==
@@ -142,6 +150,14 @@
     "@babel/helper-create-class-features-plugin" "^7.2.1"
     "@babel/helper-plugin-utils" "^7.0.0"
 
+"@babel/plugin-proposal-class-properties@^7.4.0":
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-class-properties/-/plugin-proposal-class-properties-7.4.0.tgz#d70db61a2f1fd79de927eea91f6411c964e084b8"
+  integrity sha512-t2ECPNOXsIeK1JxJNKmgbzQtoG27KIlVE61vTqX0DKR9E9sZlVVxWUtEW9D5FlZ8b8j7SBNCHY47GgPKCKlpPg==
+  dependencies:
+    "@babel/helper-create-class-features-plugin" "^7.4.0"
+    "@babel/helper-plugin-utils" "^7.0.0"
+
 "@babel/plugin-syntax-jsx@^7.2.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-jsx/-/plugin-syntax-jsx-7.2.0.tgz#0b85a3b4bc7cdf4cc4b8bf236335b907ca22e7c7"
@@ -155,6 +171,15 @@
   integrity sha512-t0JKGgqk2We+9may3t0xDdmneaXmyxq0xieYcKHxIsrJO64n1OiMWNUtc5gQK1PA0NpdCRrtZp4z+IUaKugrSA==
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
+
+"@babel/plugin-transform-react-jsx@^7.3.0":
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-jsx/-/plugin-transform-react-jsx-7.3.0.tgz#f2cab99026631c767e2745a5368b331cfe8f5290"
+  integrity sha512-a/+aRb7R06WcKvQLOu4/TpjKOdvVEKRLWFpKcNuHhiREPgGRB4TQJxq07+EZLS8LFVYpfq1a5lDUnuMdcCpBKg==
+  dependencies:
+    "@babel/helper-builder-react-jsx" "^7.3.0"
+    "@babel/helper-plugin-utils" "^7.0.0"
+    "@babel/plugin-syntax-jsx" "^7.2.0"
 
 "@babel/polyfill@^7.0.0":
   version "7.4.3"
@@ -1748,7 +1773,7 @@ estree-walker@^0.6.0:
   resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.6.0.tgz#5d865327c44a618dde5699f763891ae31f257dae"
   integrity sha512-peq1RfVAVzr3PU/jL31RaOjUKLoZJpObQWJJ+LgfcxDUifyLZ1RjPQZTl0pzj2uJ45b7A7XpyppXvxdEqzo4rw==
 
-esutils@^2.0.2:
+esutils@^2.0.0, esutils@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.2.tgz#0abf4f1caa5bcb1f7a9d8acc6dea4faaa04bac9b"
   integrity sha1-Cr9PHKpbyx96nYrMbepPqqBLrJs=

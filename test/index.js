@@ -1,11 +1,10 @@
-import 'jest-dom/extend-expect';
+require('jest-dom/extend-expect');
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import defaultResolver from '../defaults/resolver';
+const React = require('react');
+const ReactDOM = require('react-dom');
 
-import { Accio, AccioCacheProvider } from '../index';
-import { render, wait, Simulate } from 'react-testing-library';
+const { Accio, AccioCacheProvider, defaultResolver } = require('../dist/index');
+const { render, wait, Simulate } = require('react-testing-library');
 
 const renderAccio = (fetchState) => (
   <div>
@@ -96,7 +95,7 @@ describe('<Accio />', () => {
 
     expect(resolverSpy).toHaveBeenCalledTimes(1);
     expect(getByTestId('response')).toBeVisible();
-    
+
     // update!!
     const updateBtn = getByText('Update');
     Simulate.click(updateBtn);
