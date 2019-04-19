@@ -1,4 +1,4 @@
-import 'dom-testing-library/extend-expect';
+import 'jest-dom/extend-expect';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -49,14 +49,15 @@ beforeEach(() => {
 
 describe('<Accio />', () => {
   test('Basic use', async () => {
-    const { getByTestId } = render(
+    const { getByTestId, debug } = render(
       <Accio {...basicProps}>{renderAccio}</Accio>
     );
 
-    expect(getByTestId('loading')).toBeInTheDocument();
+    const loading = getByTestId('loading');
+    expect(loading).toBeVisible();
 
     await wait(() => {
-      expect(getByTestId('response')).toBeInTheDocument();
+      expect(getByTestId('response')).toBeVisible();
     });
   });
 
@@ -95,7 +96,7 @@ describe('<Accio />', () => {
     await wait();
 
     expect(resolverSpy).toHaveBeenCalledTimes(1);
-    expect(getByTestId('response')).toBeInTheDocument();
+    expect(getByTestId('response')).toBeVisible();
     
     // update!!
     const updateBtn = getByText('Update');
@@ -123,10 +124,10 @@ describe('<Accio />', () => {
       </Accio>
     );
 
-    expect(getByTestId('loading')).toBeInTheDocument();
+    expect(getByTestId('loading')).toBeVisible();
 
     await wait(() => {
-      expect(getByTestId('error')).toBeInTheDocument();
+      expect(getByTestId('error')).toBeVisible();
     });
 
     // test onError lifecycle hook
@@ -325,7 +326,7 @@ describe('<Accio />', () => {
     }).toThrow();
 
     // instant, no "wait-for-expect" needed
-    expect(getByText('Response text')).toBeInTheDocument();
+    expect(getByText('Response text')).toBeVisible();
   });
 
   test('Network error when preloading', async () => {
