@@ -2,7 +2,10 @@
   "name": "react-accio",
   "version": "2.0.0-next.1",
   "description": "Declaratively fetch multiple APIs with a single React component.",
+  "source": "src/index.js",
   "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "unpkg": "dist/index.umd.js",
   "keywords": [
     "react",
     "declarative",
@@ -19,17 +22,9 @@
     "react": "^16.8"
   },
   "dependencies": {
-    "@babel/runtime": "^7.4.3",
     "hoist-non-react-statics": "^2.5.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.4.3",
-    "@babel/core": "^7.4.3",
-    "@babel/plugin-proposal-class-properties": "^7.4.0",
-    "@babel/plugin-transform-runtime": "^7.4.3",
-    "@babel/preset-env": "^7.4.3",
-    "@babel/preset-flow": "^7.0.0",
-    "@babel/preset-react": "^7.0.0",
     "babel-jest": "^24.7.1",
     "flow-bin": "^0.78.0",
     "jest": "^24.7.1",
@@ -40,8 +35,8 @@
     "react-testing-library": "^3.1.3"
   },
   "scripts": {
-    "build": "babel src -d dist --ignore \"**/__tests__/**/*.js\"",
-    "dev": "rollup -c -w",
+    "build": "microbundle",
+    "dev": "microbundle watch",
     "test": "jest",
     "flow": "flow"
   },
