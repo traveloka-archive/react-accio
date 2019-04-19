@@ -28,6 +28,7 @@ export type Props = {
   onShowLoading?: () => any,
   onStartFetching?: () => any,
   timeout?: number,
+  fetchKey?: (props: Props) => string,
 
   // private props
   _cache: ?AccioCache,
@@ -147,7 +148,7 @@ class Accio extends React.Component<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     const { fetchKey } = this.props;
     if (fetchKey && fetchKey(this.props) !== fetchKey(prevProps)) {
       this.doWork.call(this);
