@@ -155,7 +155,7 @@ class Accio extends React.Component<Props, State> {
     }
   }
 
-  async doWork() {
+  doWork() {
     const { _cache, onStartFetching, timeout, url } = this.props;
 
     const cacheKey = getCacheKey(url, getFetchOptions(this.props));
@@ -175,18 +175,19 @@ class Accio extends React.Component<Props, State> {
     if (typeof onStartFetching === 'function') {
       onStartFetching();
     }
-    const [err, response] = await to(this.doFetch.call(this));
 
-    if (err) {
-      this.setError.call(this, err);
-    }
+    return to(this.doFetch.call(this)).then(([err, response]) => {
+      if (err) {
+        this.setError.call(this, err);
+      }
 
-    if (this.timer) {
-      clearTimeout(this.timer);
-    }
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
 
-    this.setLoading.call(this, false);
-    this.setResponse.call(this, response);
+      this.setLoading.call(this, false);
+      this.setResponse.call(this, response);
+    });
   }
 
   doFetch(): Promise<*> {
