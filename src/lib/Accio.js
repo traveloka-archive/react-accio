@@ -28,6 +28,7 @@ export type Props = {
   onShowLoading?: () => any,
   onStartFetching?: () => any,
   timeout?: number,
+  fetchKey?: (props: any) => any,
 
   // private props
   _cache: ?AccioCache,
@@ -108,6 +109,8 @@ class Accio extends React.Component<Props, State> {
 
   timer: TimeoutID;
 
+  requestId = 0;
+
   async preload() {
     const { _cache } = this.props;
 
@@ -155,6 +158,8 @@ class Accio extends React.Component<Props, State> {
   }
 
   async doWork() {
+    const newRequestId = ++this.requestId;
+
     const { _cache, onStartFetching, timeout, url } = this.props;
 
     const cacheKey = getCacheKey(url, getFetchOptions(this.props));
@@ -175,6 +180,10 @@ class Accio extends React.Component<Props, State> {
       onStartFetching();
     }
     const [err, response] = await to(this.doFetch.call(this));
+
+    if (newRequestId !== this.requestId) {
+      return;
+    }
 
     if (err) {
       this.setError.call(this, err);
