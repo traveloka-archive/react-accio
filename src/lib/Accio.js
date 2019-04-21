@@ -9,13 +9,6 @@ import { type AccioCache } from './AccioCacheContext';
 
 type Dict<K, V> = { [key: K]: V };
 
-const getSequence = (function sequenceGenerator() {
-  let sequence = 1;
-  return function returnSequence() {
-    return sequence++;
-  };
-})();
-
 export type Props = {
   // required props
   children: (AccioState: State) => React.Node,
@@ -165,8 +158,7 @@ class Accio extends React.Component<Props, State> {
   }
 
   async doWork() {
-    const newRequestId = getSequence();
-    this.requestId = newRequestId;
+    const newRequestId = ++this.requestId;
 
     const { _cache, onStartFetching, timeout, url } = this.props;
 
