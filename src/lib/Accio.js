@@ -108,6 +108,8 @@ class Accio extends React.Component<Props, State> {
   preloadError: ?Error = null;
 
   timer: TimeoutID;
+  
+  requestId = 0;
 
   preload() {
     return Promise.resolve().then(() => {
@@ -155,7 +157,10 @@ class Accio extends React.Component<Props, State> {
     }
   }
 
+
   doWork() {
+    const newRequestId = ++this.requestId;
+    
     const { _cache, onStartFetching, timeout, url } = this.props;
 
     const cacheKey = getCacheKey(url, getFetchOptions(this.props));
@@ -177,6 +182,10 @@ class Accio extends React.Component<Props, State> {
     }
 
     return to(this.doFetch.call(this)).then(([err, response]) => {
+      if (newRequestId !== this.requestId) {
+        return;
+      }
+
       if (err) {
         this.setError.call(this, err);
       }
