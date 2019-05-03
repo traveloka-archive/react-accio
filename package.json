@@ -1,9 +1,11 @@
 {
   "name": "react-accio",
-  "version": "1.1.1",
+  "version": "2.0.0-next.3",
   "description": "Declaratively fetch multiple APIs with a single React component.",
-  "main": "dist/Accio.cjs.js",
-  "module": "dist/Accio.esm.js",
+  "source": "src/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "unpkg": "dist/index.umd.js",
   "keywords": [
     "react",
     "declarative",
@@ -17,35 +19,29 @@
   },
   "homepage": "https://github.com/traveloka/react-accio",
   "peerDependencies": {
-    "react": "^16.3.2"
+    "react": "^16.8"
   },
   "dependencies": {
     "hoist-non-react-statics": "^2.5.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-jest": "^23.0.1",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.6.0",
-    "babel-preset-flow": "^6.23.0",
-    "babel-preset-react": "^6.24.1",
-    "dom-testing-library": "^2.3.2",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "babel-jest": "^24.7.1",
     "flow-bin": "^0.78.0",
-    "jest": "^23.0.1",
-    "react": "^16.3.2",
-    "react-dom": "^16.3.2",
-    "react-testing-library": "^3.1.3",
-    "rollup": "^0.61.0",
-    "rollup-plugin-babel": "^3.0.3"
+    "jest": "^24.7.1",
+    "jest-dom": "^3.1.3",
+    "microbundle": "^0.11.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-testing-library": "^3.1.3"
   },
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
+    "build": "microbundle --jsx React.createElement",
+    "dev": "microbundle watch",
     "test": "jest",
-    "pretest": "npm run build",
+    "pretest": "yarn build",
+    "prepublish": "yarn build",
     "flow": "flow"
   },
   "files": [

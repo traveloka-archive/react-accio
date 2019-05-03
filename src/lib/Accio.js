@@ -28,7 +28,7 @@ export type Props = {
   onShowLoading?: () => any,
   onStartFetching?: () => any,
   timeout?: number,
-  fetchKey?: (props: any) => any,
+  fetchKey?: (props: Props) => string,
 
   // private props
   _cache: ?AccioCache,
@@ -108,33 +108,33 @@ class Accio extends React.Component<Props, State> {
   preloadError: ?Error = null;
 
   timer: TimeoutID;
-
+  
   requestId = 0;
 
-  async preload() {
-    const { _cache } = this.props;
+  preload() {
+    return Promise.resolve().then(() => {
+      const { _cache } = this.props;
 
-    if (!_cache) {
-      console.warn(
-        'Preloading without cache is not supported. ' +
-          'This can be fixed by wrapping your app with <AccioCacheProvider />.'
-      );
-      return;
-    }
-
-    if (this.preloadStatus < PreloadStatus.PRELOADING) {
-      this.preloadStatus = PreloadStatus.PRELOADING;
-
-      const [err, res] = await to(this.doFetch.call(this));
-      if (err) {
-        this.preloadStatus = PreloadStatus.PRELOAD_ERROR;
-        this.preloadError = err;
+      if (!_cache) {
+        console.warn(
+          'Preloading without cache is not supported. ' +
+            'This can be fixed by wrapping your app with <AccioCacheProvider />.'
+        );
         return;
       }
-
-      this.preloadStatus = PreloadStatus.PRELOADED;
-      return res;
-    }
+      if (this.preloadStatus < PreloadStatus.PRELOADING) {
+        this.preloadStatus = PreloadStatus.PRELOADING;
+        return to(this.doFetch.call(this)).then(([err, res]) => {
+          if (err) {
+            this.preloadStatus = PreloadStatus.PRELOAD_ERROR;
+            this.preloadError = err;
+            return;
+          }
+          this.preloadStatus = PreloadStatus.PRELOADED;
+          return res;
+        });
+      }
+    });
   }
 
   componentDidMount() {
@@ -150,16 +150,17 @@ class Accio extends React.Component<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     const { fetchKey } = this.props;
     if (fetchKey && fetchKey(this.props) !== fetchKey(prevProps)) {
       this.doWork.call(this);
     }
   }
 
-  async doWork() {
-    const newRequestId = ++this.requestId;
 
+  doWork() {
+    const newRequestId = ++this.requestId;
+    
     const { _cache, onStartFetching, timeout, url } = this.props;
 
     const cacheKey = getCacheKey(url, getFetchOptions(this.props));
@@ -179,22 +180,23 @@ class Accio extends React.Component<Props, State> {
     if (typeof onStartFetching === 'function') {
       onStartFetching();
     }
-    const [err, response] = await to(this.doFetch.call(this));
 
-    if (newRequestId !== this.requestId) {
-      return;
-    }
+    return to(this.doFetch.call(this)).then(([err, response]) => {
+      if (newRequestId !== this.requestId) {
+        return;
+      }
 
-    if (err) {
-      this.setError.call(this, err);
-    }
+      if (err) {
+        this.setError.call(this, err);
+      }
 
-    if (this.timer) {
-      clearTimeout(this.timer);
-    }
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
 
-    this.setLoading.call(this, false);
-    this.setResponse.call(this, response);
+      this.setLoading.call(this, false);
+      this.setResponse.call(this, response);
+    });
   }
 
   doFetch(): Promise<*> {
@@ -228,7 +230,7 @@ class Accio extends React.Component<Props, State> {
             _cache.set(cacheKey, response);
             return response;
           })
-          .catch(err => {
+          .catch((err) => {
             _cache.delete(cacheKey);
             throw err;
           });
