@@ -6,13 +6,11 @@ const ReactDOM = require('react-dom');
 const { Accio, AccioCacheProvider, defaultResolver } = require('../dist/index');
 const { render, wait, Simulate } = require('react-testing-library');
 
-const renderAccio = (fetchState) => (
+const renderAccio = fetchState => (
   <div>
     {fetchState.loading && <div data-testid="loading" />}
     {fetchState.error && <div data-testid="error" />}
-    {fetchState.response && (
-      <div data-testid="response">{JSON.stringify(fetchState.response)}</div>
-    )}
+    {fetchState.response && <div data-testid="response">{JSON.stringify(fetchState.response)}</div>}
   </div>
 );
 
@@ -20,7 +18,7 @@ const mockAPIResponse = {
   foo: 'bar',
 };
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function createResolver({ delayMs, error = false, errorMessage } = {}) {
   return async () => {
@@ -48,9 +46,7 @@ beforeEach(() => {
 
 describe('<Accio />', () => {
   test('Basic use', async () => {
-    const { getByTestId } = render(
-      <Accio {...basicProps}>{renderAccio}</Accio>
-    );
+    const { getByTestId } = render(<Accio {...basicProps}>{renderAccio}</Accio>);
 
     expect(getByTestId('loading')).toBeVisible();
 
@@ -76,11 +72,7 @@ describe('<Accio />', () => {
       render() {
         return (
           <React.Fragment>
-            <Accio
-              {...basicProps}
-              body={this.state.body}
-              fetchKey={({ body }) => JSON.stringify(body)}
-            >
+            <Accio {...basicProps} body={this.state.body} fetchKey={({ body }) => JSON.stringify(body)}>
               {renderAccio}
             </Accio>
             <button onClick={this.handleClick}>Update</button>
@@ -112,7 +104,7 @@ describe('<Accio />', () => {
     Accio.defaults.resolver = createResolver({ error: true, errorMessage });
 
     let error = null;
-    const onError = jest.fn((err) => {
+    const onError = jest.fn(err => {
       error = err;
     });
 
@@ -132,18 +124,85 @@ describe('<Accio />', () => {
     expect(onError).toHaveBeenCalledWith(error);
   });
 
+  test('Success-success-failed-success', async () => {
+    let error = null;
+    const onError = jest.fn(err => {
+      error = err;
+    });
+    const errorMessage = 'error';
+
+    // #1 Success request
+    const customProps1 = {
+      ...basicProps,
+      body: {
+        keyword: 'a',
+      },
+      fetchKey: ({ body }) => JSON.stringify(body),
+    };
+    const { getByTestId, queryByTestId, rerender } = render(<Accio {...customProps1}>{renderAccio}</Accio>);
+
+    expect(getByTestId('loading')).toBeVisible();
+    await wait(() => {
+      expect(getByTestId('response')).toBeVisible();
+    });
+
+    // #2 Success request again
+    const customProps2 = {
+      ...customProps1,
+      body: {
+        keyword: 'ab',
+      },
+    };
+    rerender(<Accio {...customProps2}>{renderAccio}</Accio>);
+    expect(getByTestId('loading')).toBeVisible();
+    await wait(() => {
+      expect(getByTestId('response')).toBeVisible();
+    });
+
+    // #3 Suddenly failed request appears
+    Accio.defaults.resolver = createResolver({ error: true, errorMessage });
+    const customProps3 = {
+      ...customProps1,
+      body: {
+        keyword: 'abc',
+      },
+      onError,
+    };
+    rerender(<Accio {...customProps3}>{renderAccio}</Accio>);
+    expect(getByTestId('loading')).toBeVisible();
+    await wait(() => {
+      expect(queryByTestId('response')).toBeNull();
+      expect(getByTestId('error')).toBeVisible();
+    });
+    expect(onError).toHaveBeenCalledWith(error);
+
+    // #4 Then magic happens, success response from the API server
+    error = null;
+    onError.mockClear();
+    Accio.defaults.resolver = createResolver();
+    const customProps4 = {
+      ...customProps1,
+      body: {
+        keyword: 'abcd',
+      },
+      onError,
+    };
+    rerender(<Accio {...customProps4}>{renderAccio}</Accio>);
+    expect(getByTestId('loading')).toBeVisible();
+    await wait(() => {
+      expect(queryByTestId('error')).toBeNull();
+      expect(getByTestId('response')).toBeVisible();
+    });
+    expect(onError).not.toHaveBeenCalled();
+  });
+
   test('Lifecycle hooks', async () => {
     const onShowLoading = jest.fn();
     const onComplete = jest.fn();
     const onStartFetching = jest.fn();
 
     render(
-      <Accio
-        {...basicProps}
-        onStartFetching={onStartFetching}
-        onShowLoading={onShowLoading}
-        onComplete={onComplete}
-      >
+      <Accio {...basicProps} onStartFetching={onStartFetching} onShowLoading={onShowLoading} onComplete={onComplete}>
         {renderAccio}
       </Accio>
     );
@@ -219,7 +278,7 @@ describe('<Accio />', () => {
     ReactDOM.render(<App />, div);
 
     // flush all promises
-    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise(resolve => setImmediate(resolve));
 
     // expect resolver to be called twice because
     // the third fetch will always hit the network (ignoreCache)
@@ -254,7 +313,7 @@ describe('<Accio />', () => {
       method: 0,
     };
 
-    notFunctionTypes.forEach((type) => {
+    notFunctionTypes.forEach(type => {
       try {
         Accio.defaults.resolver = type;
       } catch (e) {
@@ -268,7 +327,7 @@ describe('<Accio />', () => {
       }
     });
 
-    unsupportedMethods.forEach((method) => {
+    unsupportedMethods.forEach(method => {
       try {
         Accio.defaults.method = method;
       } catch (e) {
@@ -277,9 +336,7 @@ describe('<Accio />', () => {
     });
 
     expect(errorCount.resolver).toBe(notFunctionTypes.length);
-    expect(errorCount.method).toBe(
-      notFunctionTypes.length + unsupportedMethods.length
-    );
+    expect(errorCount.method).toBe(notFunctionTypes.length + unsupportedMethods.length);
   });
 
   test('Preload deferred fetch', async () => {
@@ -336,7 +393,7 @@ describe('<Accio />', () => {
     const resolverSpy = jest.spyOn(Accio.defaults, 'resolver');
 
     let error = null;
-    const onError = jest.fn((err) => {
+    const onError = jest.fn(err => {
       error = err;
     });
 
@@ -385,7 +442,7 @@ describe('<Accio />', () => {
         body: null,
       };
 
-      fetch = (trigger) => () => {
+      fetch = trigger => () => {
         this.setState(
           {
             body: requestBody,
@@ -397,9 +454,7 @@ describe('<Accio />', () => {
       render() {
         return (
           <Accio {...basicProps} body={this.state.body} defer>
-            {({ trigger }) => (
-              <button onClick={this.fetch(trigger)}>Fetch</button>
-            )}
+            {({ trigger }) => <button onClick={this.fetch(trigger)}>Fetch</button>}
           </Accio>
         );
       }
@@ -437,14 +492,8 @@ describe('Accio.defaults.resolver', () => {
   it('should behave correctly', async () => {
     const { getByTestId } = render(
       <Accio {...basicProps}>
-        {(fetchProps) => (
-          <div>
-            {fetchProps.response && (
-              <div data-testid="responseContainer">
-                {fetchProps.response.data.foo}
-              </div>
-            )}
-          </div>
+        {fetchProps => (
+          <div>{fetchProps.response && <div data-testid="responseContainer">{fetchProps.response.data.foo}</div>}</div>
         )}
       </Accio>
     );
