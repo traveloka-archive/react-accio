@@ -47,11 +47,7 @@ type Defaults = {
   resolver: Resolver,
 };
 
-type Resolver = (
-  url: string,
-  FetchOptions: Object,
-  context: Object
-) => Promise<any>;
+type Resolver = (url: string, FetchOptions: Object, context: Object) => Promise<any>;
 
 const AccioPropKeys = new Set([
   'children',
@@ -108,7 +104,7 @@ class Accio extends React.Component<Props, State> {
   preloadError: ?Error = null;
 
   timer: TimeoutID;
-  
+
   requestId = 0;
 
   preload() {
@@ -157,10 +153,9 @@ class Accio extends React.Component<Props, State> {
     }
   }
 
-
   doWork() {
     const newRequestId = ++this.requestId;
-    
+
     const { _cache, onStartFetching, timeout, url } = this.props;
 
     const cacheKey = getCacheKey(url, getFetchOptions(this.props));
@@ -188,6 +183,8 @@ class Accio extends React.Component<Props, State> {
 
       if (err) {
         this.setError.call(this, err);
+      } else {
+        this.setError.call(this, null);
       }
 
       if (this.timer) {
@@ -230,7 +227,7 @@ class Accio extends React.Component<Props, State> {
             _cache.set(cacheKey, response);
             return response;
           })
-          .catch((err) => {
+          .catch(err => {
             _cache.delete(cacheKey);
             throw err;
           });
@@ -259,7 +256,7 @@ class Accio extends React.Component<Props, State> {
   }
 
   setError(error: Error) {
-    if (typeof this.props.onError === 'function') {
+    if (typeof this.props.onError === 'function' && error) {
       this.props.onError(error);
     }
     this.setState({
